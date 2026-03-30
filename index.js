@@ -1,20 +1,25 @@
 let input = document.getElementById("input");
 let list = document.getElementById("list");
 let btn = document.getElementById("btn")
-
+let uniqueId = 1;
 let data = []
 data = JSON.parse(localStorage.getItem("myTask")) || [] ;
 console.log(data.length);
 
 function onLoad(data){
-      if(data.length > 0){
+//debugger
+if(data.length > 0){
+  console.log();
+
+   uniqueId = data[data.length -1].id
+   uniqueId++;
         data.forEach((task)=>{
-            addTodo(task);
+            addTodo(task.task , task.id);
         })
       }
 }
 
-function addTodo(task){
+function addTodo(task , id){
         let li = document.createElement("li");
         let title = document.createElement("span")
         let btnFunction = document.createElement("span")
@@ -32,7 +37,13 @@ function addTodo(task){
         //-----Delete Functionalty---
 
         btnDelete.addEventListener("click",function(e){
-              list.removeChild(li);
+          let store = JSON.parse(localStorage.getItem("myTask"))
+          console.log(id , "store")
+          let newData = store.filter(function(element , index){
+                   return element.id != id; 
+          })
+          localStorage.setItem("myTask",JSON.stringify(newData));
+          list.removeChild(li);
         })
 }
 
@@ -40,9 +51,16 @@ function addTodo(task){
 
 input.addEventListener("keyup" ,function(event){ 
     if(event.keyCode == 13){
-      data.push(input.value);
+        let task = {
+          task : input.value,
+          id : uniqueId  
+        }
+
+
+      data.push(task);
       localStorage.setItem("myTask" , JSON.stringify(data));
-      addTodo(input.value)
+      addTodo(task.task , task.id)
+      uniqueId++;
     }
 } )
 
